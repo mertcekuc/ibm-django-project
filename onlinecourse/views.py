@@ -115,13 +115,13 @@ def submit(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     enrollment = Enrollment.objects.get(user=user, course=course)
     submission = Submission.objects.create(enrollment=enrollment)
-    submitted_anwsers = []
+    submitted_answers = []
 
     for key in request.POST:
         if key.startswith('choice'):
             value = request.POST[key]
             choice_id = int(value)
-            submitted_anwsers.append(choice_id)
+            submitted_answers.append(choice_id)
     
     for choice_id in submitted_answers:
         choice_obj = Choice.objects.get(id=choice_id)
@@ -159,7 +159,7 @@ def show_exam_result(request, course_id, submission_id):
 
     print("Submission choices: \n", submissions)
 
-    all_exam_questions = Question.objects.filter(courses=course_id)
+    all_exam_questions = Question.objects.filter(course=course_id)
     context['questions'] = all_exam_questions
     print("All exam questions: \n", all_exam_questions)
 
@@ -170,7 +170,7 @@ def show_exam_result(request, course_id, submission_id):
     max_score = 0
     for question in all_exam_questions:
         max_score += question.grade
-        if question.is_get_score(submission_choices):
+        if question.is_get_score(submissions):
             submission_score += question.grade
         
     # Determine a grade (points are % correct, rounded to nearest whole integer)
